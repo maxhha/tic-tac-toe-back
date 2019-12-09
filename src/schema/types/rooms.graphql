@@ -1,0 +1,28 @@
+
+type Room {
+  id: ID
+  name: String
+  users: [String]
+}
+
+type Query {
+  getRoom(id: ID!): Room
+}
+
+type Mutation {
+  """
+  Create room with name and one user
+  """
+  createRoom(name: String!, userName: String!):Room
+  """
+  Add user to room
+  """
+  enterRoom(id: ID!, userName: String!):Room
+}
+
+type Subscription {
+  """
+  Activates when user entered to room
+  """
+  waitForOtherUserEnter(id: ID!):Room
+}

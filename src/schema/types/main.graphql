@@ -9,5 +9,5 @@ type Mutation {
 }
 
 type Subscription {
-  dataAdded: String
+  dataAdded(name: String!): String
 }

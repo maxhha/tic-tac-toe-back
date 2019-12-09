@@ -1,6 +1,5 @@
 import { PubSub } from 'apollo-server'
 
-
 const dataPubsub = new PubSub()
 const data : String[] = []
 
@@ -17,11 +16,11 @@ export default {
       const result = data.push(args.data)
       dataPubsub.publish(ADD_DATA, { dataAdded: args.data })
       return result
-    }
+    },
   },
   Subscription: {
     dataAdded: {
-      subscribe: () => dataPubsub.asyncIterator(ADD_DATA),
+      subscribe: (_: any, b:any) => Boolean(console.log("sub:",b)) || dataPubsub.asyncIterator(ADD_DATA),
     },
   },
 }
