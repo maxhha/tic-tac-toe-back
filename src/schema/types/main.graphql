@@ -1,0 +1,13 @@
+type Query {
+  hello: String
+  test(name: String!): String
+  age: String
+}
+
+type Mutation {
+  push(data: String!): Int
+}
+
+type Subscription {
+  dataAdded: String
+}
