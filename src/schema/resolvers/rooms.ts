@@ -18,7 +18,7 @@ export default {
     ) {
       return createRoom(name, userName)
     },
-    
+
     async enterRoom(
       _: any,
       { id, userName }: { id: string, userName: string },
@@ -35,7 +35,10 @@ export default {
     waitForOtherUserEnter: {
       subscribe: withFilter(
         () => pubsub.asyncIterator(ADD_USER),
-        (payload : { waitForOtherUserEnter: Room }, { id } : { id: string }) => {
+        (
+          payload : { waitForOtherUserEnter: Room },
+          { id } : { id: string },
+        ) => {
           return payload.waitForOtherUserEnter.id === id
         }
       )
