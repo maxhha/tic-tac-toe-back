@@ -1,5 +1,6 @@
 import { withFilter, PubSub } from "apollo-server"
 import { Room, createRoom, findRoom, enterRoom } from "../../rooms"
+import { findUser } from "../../users"
 
 const pubsub = new PubSub()
 
@@ -14,21 +15,25 @@ export default {
   Mutation: {
     createRoom(
       _ : any,
-      { name, userName }: { name: string, userName: string },
+      { name }: { name: string },
+      { userId } : ResolverContext,
     ) {
-      return createRoom(name, userName)
+      if (!userId) return null
+      return findUser(userId)
+        .then((user) => user ? createRoom(name, user) : null)
     },
 
     async enterRoom(
       _: any,
-      { id, userName }: { id: string, userName: string },
+      { id }: { id: string },
     ) {
-      return enterRoom(id, userName).then(
-        (room) => {
-          pubsub.publish(ADD_USER, { waitForOtherUserEnter: room } )
-          return room
-        }
-      )
+      return null
+      // return enterRoom(id, userName).then(
+      //   (room) => {
+      //     pubsub.publish(ADD_USER, { waitForOtherUserEnter: room } )
+      //     return room
+      //   }
+      // )
     },
   },
   Subscription: {

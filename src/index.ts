@@ -1,12 +1,38 @@
-import { createServer } from "http"
+require('dotenv').config()
+
 import express from "express"
+import { createServer } from "http"
 import { ApolloServer } from 'apollo-server-express'
 import schema from "./schema"
+import { verifyToken } from "./utils"
 
 const app: express.Application = express()
 
 // Setup GraphQL server
-const server = new ApolloServer({ schema })
+const server = new ApolloServer({
+  schema,
+  context: ({ req }) => {
+   const token = req.headers.authorization || '';
+
+   const data = verifyToken(token)
+   const context : ResolverContext = {}
+
+   if (data) {
+     context.userId = data.uid
+   } 
+
+   return context
+ },
+  subscriptions: {
+    onConnect: (_connectionParams, _websocket, context) => {
+      console.log("connected at ")
+      console.dir(context)
+    },
+    onDisconnect: () => {
+
+    }
+  }
+})
 server.applyMiddleware({ app })
 
 // Setup http server with ws subsciptions

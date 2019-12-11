@@ -1,3 +1,5 @@
+scalar Token
+
 type Query {
   hello: String
   test(name: String!): String

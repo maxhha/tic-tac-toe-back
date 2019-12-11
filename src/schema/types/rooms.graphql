@@ -1,8 +1,7 @@
-
 type Room {
   id: ID
   name: String
-  users: [String]
+  users: [User]
 }
 
 type Query {
@@ -13,16 +12,16 @@ type Mutation {
   """
   Create room with name and one user
   """
-  createRoom(name: String!, userName: String!):Room
+  createRoom(name: String!):Room
   """
   Add user to room
   """
-  enterRoom(id: ID!, userName: String!):Room
+  enterRoom(id: ID!):Room
 }
 
 type Subscription {
   """
   Activates when user entered to room
   """
-  waitForOtherUserEnter(id: ID!):Room
+  waitForOtherUserEnter:Room
 }
