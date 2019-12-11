@@ -1,6 +1,13 @@
 import { withFilter, PubSub } from "apollo-server"
-import { Room, createRoom, findRoom, enterRoom } from "../../rooms"
-import { findUser } from "../../users"
+import {
+  Room,
+  createRoom,
+  findRoom,
+  enterRoom,
+} from "../../rooms"
+import {
+  getUser,
+} from "../../users"
 
 const pubsub = new PubSub()
 
@@ -19,21 +26,22 @@ export default {
       { userId } : ResolverContext,
     ) {
       if (!userId) return null
-      return findUser(userId)
-        .then((user) => user ? createRoom(name, user) : null)
+      return getUser(userId)
+        .then((user) => createRoom(name, user))
     },
 
     async enterRoom(
       _: any,
       { id }: { id: string },
+      { userId }: ResolverContext,
     ) {
-      return null
-      // return enterRoom(id, userName).then(
-      //   (room) => {
-      //     pubsub.publish(ADD_USER, { waitForOtherUserEnter: room } )
-      //     return room
-      //   }
-      // )
+      if (!userId) return null
+      return getUser(userId)
+        .then((user) => enterRoom(id, user))
+        .then((room) => {
+          pubsub.publish(ADD_USER, { waitForOtherUserEnter: room } )
+          return room
+        })
     },
   },
   Subscription: {
@@ -41,10 +49,13 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator(ADD_USER),
         (
-          payload : { waitForOtherUserEnter: Room },
-          { id } : { id: string },
+          payload: { waitForOtherUserEnter: Room, userId: string },
+          _variables: any,
+          { userId }: ResolverContext,
         ) => {
-          return payload.waitForOtherUserEnter.id === id
+          return payload.waitForOtherUserEnter.users.findIndex(
+            ({ id }) => id === userId
+          ) >= 0
         }
       )
     },

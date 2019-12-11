@@ -1,5 +1,8 @@
 import { generateID } from "../utils"
-import { User } from "../users"
+import {
+  User,
+  setUserRoom,
+} from "../users"
 
 export interface Room {
   id: string,
@@ -24,27 +27,34 @@ export const getRoom = (id : string) => Promise.resolve().then(
 )
 
 export const createRoom = (name: string, user: User) => Promise.resolve().then(
-  () => {
+  async () => {
     let id;
     do {
       id = generateID()
     } while(id in rooms)
 
-    return rooms[id] = {id, name, users: [user], createdAt: new Date(), active: true}
+    const room: Room = rooms[id] = {id, name, users: [user], createdAt: new Date(), active: true}
+
+    return setUserRoom(user.id, room.id)
+      .then(() => room)
   }
 )
 
-export const findRoom = (id: string) => Promise.resolve(rooms[id] || null)
+export const findRoom = (id: string) => Promise.resolve(id in rooms ? rooms[id] : null)
 
 export const enterRoom = (id: string, user: User) => Promise.resolve(id)
   .then(getRoom)
-  .then(room => {
+  .then(async (room) => {
+    if (user.currentRoomId){
+      throw new Error("User is in room")
+    }
     if (room.users.length >= 2)
       throw new Error("Room is full")
 
     room.users.push(user)
 
-    return room
+    return setUserRoom(user.id, room.id)
+      .then(() => room)
   }
 )
 

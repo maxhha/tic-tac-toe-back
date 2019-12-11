@@ -1,6 +1,7 @@
 type User {
   id: ID!
   name: String!
+  currentRoom: Room
 }
 
 input createUserInput {

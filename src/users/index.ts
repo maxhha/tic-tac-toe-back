@@ -1,7 +1,9 @@
-import { generateID } from '../utils';
+import { generateID } from "../utils"
+
 export interface User {
   id: string
   name: string
+  currentRoomId?: string
   createdAt: Date
 }
 
@@ -37,3 +39,12 @@ export const createUser = (name: string) => Promise.resolve().then(
     return users[user.id] = user
   }
 )
+
+export const setUserRoom = (id: string, roomId?: string) => Promise.resolve(id)
+  .then(getUser)
+  .then(
+    (user) => {
+      user.currentRoomId = roomId
+      return user
+    }
+  )

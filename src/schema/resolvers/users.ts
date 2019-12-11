@@ -1,10 +1,19 @@
 import { createToken } from "../../utils"
 import {
+  findRoom,
+} from "../../rooms"
+import {
+  User,
   createUser,
   findUser,
 } from "../../users"
 
 export default {
+  User: {
+    currentRoom: (user: User) => (
+      user.currentRoomId ? findRoom(user.currentRoomId) : null
+    ),
+  },
   Query: {
     viewer(
       _parent: any,

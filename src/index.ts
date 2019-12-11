@@ -12,6 +12,7 @@ const app: express.Application = express()
 const server = new ApolloServer({
   schema,
   context: ({ req }) => {
+   if (!req) return {}
    const token = req.headers.authorization || '';
 
    const data = verifyToken(token)
@@ -19,13 +20,14 @@ const server = new ApolloServer({
 
    if (data) {
      context.userId = data.uid
-   } 
+   }
 
    return context
  },
   subscriptions: {
-    onConnect: (_connectionParams, _websocket, context) => {
+    onConnect: (connectionParams, _websocket, context) => {
       console.log("connected at ")
+      console.dir(connectionParams)
       console.dir(context)
     },
     onDisconnect: () => {
