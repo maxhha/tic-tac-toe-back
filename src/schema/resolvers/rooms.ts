@@ -1,6 +1,5 @@
 import { withFilter, PubSub } from "apollo-server"
 import {
-  Room,
   createRoom,
   findRoom,
   enterRoom,

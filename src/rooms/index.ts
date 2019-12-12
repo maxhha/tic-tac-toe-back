@@ -1,20 +1,7 @@
 import { generateID } from "../utils"
 import {
-  User,
   setUserRoom,
 } from "../users"
-
-export interface Room {
-  id: string,
-  name: string,
-  users: User[],
-  createdAt: Date,
-  active: boolean;
-}
-
-interface RoomsDatabase {
-  [id: string]: Room
-}
 
 const rooms : RoomsDatabase = {}
 

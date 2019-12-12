@@ -3,7 +3,6 @@ import {
   findRoom,
 } from "../../rooms"
 import {
-  User,
   createUser,
   findUser,
 } from "../../users"
