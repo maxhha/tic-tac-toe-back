@@ -13,6 +13,13 @@ const pubsub = new PubSub()
 const ADD_USER = "add_user"
 
 export default {
+  Room: {
+    users(
+      room : Room
+    ) {
+      return Promise.all(room.users.map(getUser))
+    }
+  },
   Query: {
     getRoom: (_ : any, { id }: { id : string }) => (
       findRoom(id)
@@ -48,13 +55,11 @@ export default {
       subscribe: withFilter(
         () => pubsub.asyncIterator(ADD_USER),
         (
-          payload: { waitForOtherUserEnter: Room, userId: string },
+          payload: { waitForOtherUserEnter: Room },
           _variables: any,
-          { userId }: ResolverContext,
+          { currentRoomId }: ResolverContext,
         ) => {
-          return payload.waitForOtherUserEnter.users.findIndex(
-            ({ id }) => id === userId
-          ) >= 0
+          return payload.waitForOtherUserEnter.id === currentRoomId
         }
       )
     },

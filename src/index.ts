@@ -5,35 +5,50 @@ import { createServer } from "http"
 import { ApolloServer } from 'apollo-server-express'
 import schema from "./schema"
 import { verifyToken } from "./utils"
+import { getUser } from "./users"
+
+const getContext = async (token: string) => {
+  const data = verifyToken(token)
+  let context : ResolverContext = {}
+
+  if (data) {
+    context = await (
+      getUser(data.uid)
+      .then(
+        user => ({
+          userId: user.id,
+          currentRoomId: user.currentRoomId
+        }),
+        _err => ({}),
+      )
+    )
+  }
+
+  return context
+}
 
 const app: express.Application = express()
 
 // Setup GraphQL server
 const server = new ApolloServer({
   schema,
-  context: ({ req }) => {
-   if (!req) return {}
-   const token = req.headers.authorization || '';
-
-   const data = verifyToken(token)
-   const context : ResolverContext = {}
-
-   if (data) {
-     context.userId = data.uid
-   }
-
-   return context
- },
+  context: ({ req, connection }) => {
+    if (!req) {
+      return connection ? connection.context : {}
+    } else {
+      return getContext(req.headers.authorization || '')
+    }
+  },
   subscriptions: {
-    onConnect: (connectionParams, _websocket, context) => {
-      console.log("connected at ")
-      console.dir(connectionParams)
-      console.dir(context)
+    onConnect(
+      { authorization } : { authorization?: string }
+    ) {
+      return getContext(authorization || '')
     },
     onDisconnect: () => {
 
-    }
-  }
+    },
+  },
 })
 server.applyMiddleware({ app })
 

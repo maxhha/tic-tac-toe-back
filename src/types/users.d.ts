@@ -3,6 +3,7 @@ interface User {
   name: string
   currentRoomId?: string
   createdAt: Date
+  updatedAt: Date
 }
 
 interface UserDatabase {

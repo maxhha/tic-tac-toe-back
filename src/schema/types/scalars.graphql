@@ -1,0 +1,4 @@
+"""
+Token is used in authorization
+"""
+scalar Token

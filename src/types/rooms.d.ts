@@ -1,9 +1,11 @@
 interface Room {
   id: string,
   name: string,
-  users: User[],
+  users: string[],
   createdAt: Date,
-  active: boolean;
+  gameActive: boolean,
+  updatedAt: Date,
+  board?: Board,
 }
 
 interface RoomsDatabase {

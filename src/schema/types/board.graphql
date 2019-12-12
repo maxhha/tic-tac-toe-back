@@ -1,0 +1,25 @@
+type Cell {
+  x: Int!
+  y: Int!
+  owner: User!
+}
+
+type Board {
+  cells: [Cell]!
+  lastStep: Cell
+  winner: User
+  currentPlayer: User
+  order: [User]!
+}
+
+type Query {
+  board: Board
+}
+
+# type Mutation {
+#   makeStep(x: Int!, y: Int!): Board
+# }
+
+# type Subscription {
+#   waitBoardChange: Board
+# }

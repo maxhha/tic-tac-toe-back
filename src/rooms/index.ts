@@ -2,6 +2,9 @@ import { generateID } from "../utils"
 import {
   setUserRoom,
 } from "../users"
+import {
+  createBoard,
+} from "../boards"
 
 const rooms : RoomsDatabase = {}
 
@@ -13,6 +16,8 @@ export const getRoom = (id : string) => Promise.resolve().then(
   }
 )
 
+export const findRoom = (id: string) => Promise.resolve(id in rooms ? rooms[id] : null)
+
 export const createRoom = (name: string, user: User) => Promise.resolve().then(
   async () => {
     let id;
@@ -20,14 +25,28 @@ export const createRoom = (name: string, user: User) => Promise.resolve().then(
       id = generateID()
     } while(id in rooms)
 
-    const room: Room = rooms[id] = {id, name, users: [user], createdAt: new Date(), active: true}
+    const room: Room = {
+      id,
+      name,
+      users: [user.id],
+      createdAt: new Date(),
+      gameActive: true,
+      updatedAt: new Date(),
+    }
+
+    rooms[id] = room
 
     return setUserRoom(user.id, room.id)
       .then(() => room)
   }
 )
 
-export const findRoom = (id: string) => Promise.resolve(id in rooms ? rooms[id] : null)
+export const updateRoom = (id: string, room: Room) => Promise.resolve().then(
+  () => {
+    room.updatedAt = new Date()
+    return rooms[id] = room
+  }
+)
 
 export const enterRoom = (id: string, user: User) => Promise.resolve(id)
   .then(getRoom)
@@ -38,17 +57,26 @@ export const enterRoom = (id: string, user: User) => Promise.resolve(id)
     if (room.users.length >= 2)
       throw new Error("Room is full")
 
-    room.users.push(user)
+    room.users.push(user.id)
+    await setUserRoom(user.id, id)
 
-    return setUserRoom(user.id, room.id)
-      .then(() => room)
-  }
-)
+    if (room.users.length === 2)
+      room = startGameInRoom(room)
+
+    return updateRoom(id, room)
+  })
 
 export const exitRoom = (id: string, user: User) => Promise.resolve(id)
   .then(getRoom)
-  .then(room => {
+  .then(async room => {
       room.users = room.users.filter(u => !Object.is(u, user))
-      return room
+      await setUserRoom(user.id, id)
+      return updateRoom(id, room)
   }
 )
+
+const startGameInRoom = (room: Room) => {
+  room.gameActive = true
+  room.board = createBoard(room)
+  return room
+}

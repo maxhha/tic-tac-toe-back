@@ -1,7 +1,8 @@
 type Room {
-  id: ID
-  name: String
-  users: [User]
+  id: ID!
+  name: String!
+  users: [User]!
+  gameActive: Boolean!
 }
 
 type Query {
