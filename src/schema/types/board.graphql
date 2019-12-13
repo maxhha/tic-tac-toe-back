@@ -21,9 +21,14 @@ type Query {
   board: Board
 }
 
-# type Mutation {
-#   makeStep(input: Position): Board
-# }
+input makeStepInput {
+  x: Int!,
+  y: Int!,
+}
+
+type Mutation {
+  makeStep(input: makeStepInput!): Board
+}
 
 # type Subscription {
 #   waitBoardChange: Board

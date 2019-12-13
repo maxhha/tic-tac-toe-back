@@ -1,5 +1,11 @@
 import { getUser } from "../../users"
-import { getRoom } from "../../rooms"
+import {
+  getRoom,
+  updateRoom,
+} from "../../rooms"
+import {
+  makeStep,
+} from "../../boards"
 
 export default {
   Board: {
@@ -33,5 +39,35 @@ export default {
 
       return room.board || null
     }
+  },
+  Mutation: {
+    async makeStep(
+      _parent: any,
+      {
+        input: { x, y }
+      }: {
+        input: { x: number, y: number }
+      },
+      { currentRoomId, userId }: ResolverContext,
+    ) {
+      if (!userId) return null
+      if (!currentRoomId) return null
+
+      const room = await getRoom(currentRoomId)
+
+      if (!room.board)
+        throw new Error("No board in the room")
+
+      if (!room.gameActive)
+        throw new Error("Game is inactive")
+
+      const cell: BoardCell = {
+        position: { x, y },
+        owner: userId,
+      }
+      room.board = makeStep(room.board, cell)
+
+      return updateRoom(room).then(room => room.board)
+    },
   },
 }

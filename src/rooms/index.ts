@@ -41,10 +41,10 @@ export const createRoom = (name: string, user: User) => Promise.resolve().then(
   }
 )
 
-export const updateRoom = (id: string, room: Room) => Promise.resolve().then(
+export const updateRoom = (room: Room) => Promise.resolve().then(
   () => {
     room.updatedAt = new Date()
-    return rooms[id] = room
+    return rooms[room.id] = room
   }
 )
 
@@ -57,13 +57,13 @@ export const enterRoom = (id: string, user: User) => Promise.resolve(id)
     if (room.users.length >= 2)
       throw new Error("Room is full")
 
-    room.users.push(user.id)
+    room.users = [...room.users, user.id]
     await setUserRoom(user.id, id)
 
     if (room.users.length === 2)
       room = startGameInRoom(room)
 
-    return updateRoom(id, room)
+    return updateRoom(room)
   })
 
 export const exitRoom = (id: string, user: User) => Promise.resolve(id)
@@ -71,7 +71,7 @@ export const exitRoom = (id: string, user: User) => Promise.resolve(id)
   .then(async room => {
       room.users = room.users.filter(u => !Object.is(u, user))
       await setUserRoom(user.id, id)
-      return updateRoom(id, room)
+      return updateRoom(room)
   }
 )
 
