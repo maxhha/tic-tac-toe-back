@@ -1,12 +1,17 @@
 
-interface BoardCell {
+interface BoardPosition {
   x: number,
   y: number,
-  owner: string
+}
+
+interface BoardCell {
+  position: BoardPosition,
+  owner: string,
 }
 
 interface Board {
   cells: BoardCell[],
+  possibleSteps: BoardPosition[],
   lastStep?: BoardCell,
   winner?: string,
   currentPlayer?: string,

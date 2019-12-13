@@ -7,7 +7,19 @@ export default {
       { order }: Board
     ) {
       return Promise.all(order.map(getUser))
-    }
+    },
+    currentPlayer(
+      { currentPlayer }: Board,
+    ) {
+      return currentPlayer ? getUser(currentPlayer) : null
+    },
+  },
+  Cell: {
+    owner(
+      { owner }: BoardCell,
+    ) {
+      return getUser(owner)
+    },
   },
   Query: {
     async board(

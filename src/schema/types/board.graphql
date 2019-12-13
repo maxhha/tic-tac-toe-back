@@ -1,11 +1,16 @@
-type Cell {
+type Position {
   x: Int!
   y: Int!
+}
+
+type Cell {
+  position: Position!
   owner: User!
 }
 
 type Board {
   cells: [Cell]!
+  possibleSteps: [Position]!
   lastStep: Cell
   winner: User
   currentPlayer: User
@@ -17,7 +22,7 @@ type Query {
 }
 
 # type Mutation {
-#   makeStep(x: Int!, y: Int!): Board
+#   makeStep(input: Position): Board
 # }
 
 # type Subscription {
