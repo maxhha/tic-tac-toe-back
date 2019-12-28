@@ -60,7 +60,7 @@ export const makeStep = (board: Board, cell: BoardCell ) => {
       cell,
     ],
     lastStep: cell,
-    possibleSteps: {
+    possibleSteps: [
       ...board.possibleSteps.slice(0, possibleStepIndex),
       ...board.possibleSteps.slice(possibleStepIndex+1),
       ...[
@@ -79,7 +79,7 @@ export const makeStep = (board: Board, cell: BoardCell ) => {
           p => p.x === pos.x && p.y === pos.y
         )
       ),
-    },
+    ],
     currentPlayer: (
       board.order[
         (
