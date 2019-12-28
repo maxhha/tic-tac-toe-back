@@ -1,3 +1,4 @@
+import { withFilter, PubSub } from "apollo-server"
 import { getUser } from "../../users"
 import {
   getRoom,
@@ -6,6 +7,10 @@ import {
 import {
   makeStep,
 } from "../../boards"
+
+const pubsub = new PubSub()
+
+const UPDATE_BOARD = "update_board"
 
 export default {
   Board: {
@@ -67,7 +72,27 @@ export default {
       }
       room.board = makeStep(room.board, cell)
 
-      return updateRoom(room).then(room => room.board)
+      return updateRoom(room).then((room) => {
+        pubsub.publish(UPDATE_BOARD, {
+          waitBoardChange: room.board,
+          roomId: room.id,
+        })
+        return room.board
+      })
     },
   },
+  Subscription: {
+    waitBoardChange: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(UPDATE_BOARD),
+        (
+          payload: { waitBoardChange: Board, roomId: string },
+          _variables: any,
+          { currentRoomId }: ResolverContext,
+        ) => {
+          return payload.roomId === currentRoomId
+        }
+      )
+    }
+  }
 }

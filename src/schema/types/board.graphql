@@ -30,6 +30,6 @@ type Mutation {
   makeStep(input: makeStepInput!): Board
 }
 
-# type Subscription {
-#   waitBoardChange: Board
-# }
+type Subscription {
+  waitBoardChange: Board
+}
