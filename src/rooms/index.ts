@@ -30,7 +30,7 @@ export const createRoom = (name: string, user: User) => Promise.resolve().then(
       name,
       users: [user.id],
       createdAt: new Date(),
-      gameActive: true,
+      gameActive: false,
       updatedAt: new Date(),
     }
 
