@@ -14,6 +14,7 @@ interface Board {
   possibleSteps: BoardPosition[],
   lastStep?: BoardCell,
   winner?: string,
+  winnerLine?: BoardPosition[],
   currentPlayer?: string,
   order: string[],
 }

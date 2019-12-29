@@ -1,7 +1,3 @@
-import {
-  updateRoom,
-} from "../rooms"
-
 export const createBoard = (room: Room) => {
   const order: string[]= room.users.reverse()
   const currentPlayer = order[0]
@@ -34,7 +30,54 @@ export const createBoard = (room: Room) => {
   return board
 }
 
-export const makeStep = (board: Board, cell: BoardCell ) => {
+const updateBoardWinner = (board: Board, cell: BoardCell): Board => {
+
+  if (board.winner) {
+    return board
+  }
+
+  const dx = [1, 1, 0, -1]
+  const dy = [0, 1, 1, 1]
+
+  let line: BoardPosition[]
+
+  for(let i = 0; i < 4; i++){
+    line = []
+
+    for(let sign = -1; sign < 2; sign += 2) {
+      for(let l = 1; l < 5 && line.length < 4; l++) {
+         const p: BoardPosition = {
+           x: cell.position.x + dx[i]*l*sign,
+           y: cell.position.y + dy[i]*l*sign,
+         }
+
+         if (board.cells.find(c => (
+           c.position.x === p.x
+           && c.position.y === p.y
+           && c.owner === cell.owner
+         ))) {
+           line.push(p)
+         } else {
+           break
+         }
+      }
+    }
+
+    if (line.length === 4) {
+      line.push(cell.position)
+      return {
+        ...board,
+        winner: cell.owner,
+        winnerLine: line,
+        currentPlayer: undefined,
+      }
+    }
+  }
+
+  return board
+}
+
+export const makeStep = (board: Board, cell: BoardCell ): Board => {
   if (board.currentPlayer !== cell.owner)
     throw new Error("Not order")
 
@@ -90,5 +133,5 @@ export const makeStep = (board: Board, cell: BoardCell ) => {
     ),
   }
 
-  return newBoard
+  return updateBoardWinner(newBoard, cell)
 }
