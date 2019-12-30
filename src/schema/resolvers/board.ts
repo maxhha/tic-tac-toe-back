@@ -24,6 +24,11 @@ export default {
     ) {
       return currentPlayer ? getUser(currentPlayer) : null
     },
+    winner(
+      { winner }: Board,
+    ) {
+      return winner ? getUser(winner) : null
+    },
   },
   Cell: {
     owner(

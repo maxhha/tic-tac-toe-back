@@ -12,7 +12,7 @@ interface BoardCell {
 interface Board {
   cells: BoardCell[],
   possibleSteps: BoardPosition[],
-  lastStep?: BoardCell,
+  lastStep: BoardCell,
   winner?: string,
   winnerLine?: BoardPosition[],
   currentPlayer?: string,

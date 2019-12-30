@@ -13,6 +13,7 @@ type Board {
   possibleSteps: [Position]!
   lastStep: Cell
   winner: User
+  winnerLine: [Position]
   currentPlayer: User
   order: [User]!
 }

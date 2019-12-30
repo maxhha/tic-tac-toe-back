@@ -70,6 +70,7 @@ const updateBoardWinner = (board: Board, cell: BoardCell): Board => {
         winner: cell.owner,
         winnerLine: line,
         currentPlayer: undefined,
+        possibleSteps: [],
       }
     }
   }
