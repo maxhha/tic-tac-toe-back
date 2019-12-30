@@ -53,7 +53,12 @@ export default {
   Subscription: {
     waitForOtherUserEnter: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(ADD_USER),
+        (_parent: any, _variables: any, { currentRoomId }: ResolverContext) => {
+          if (!currentRoomId) {
+            throw new Error("Not in room")
+          }
+          return pubsub.asyncIterator(ADD_USER)
+        },
         (
           payload: { waitForOtherUserEnter: Room },
           _variables: any,
