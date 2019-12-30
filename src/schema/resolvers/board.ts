@@ -89,7 +89,12 @@ export default {
   Subscription: {
     waitBoardChange: {
       subscribe: withFilter(
-        () => pubsub.asyncIterator(UPDATE_BOARD),
+        (_parent: any, _variables: any, { currentRoomId }: ResolverContext ) => {
+          if (!currentRoomId){
+            throw new Error("Not in room")
+          }
+          return pubsub.asyncIterator(UPDATE_BOARD)
+        },
         (
           payload: { waitBoardChange: Board, roomId: string },
           _variables: any,

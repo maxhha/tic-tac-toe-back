@@ -32,22 +32,20 @@ const app: express.Application = express()
 // Setup GraphQL server
 const server = new ApolloServer({
   schema,
-  context: ({ req, connection }) => {
+  context: ({
+    req,
+    payload,
+  }: {
+    req?: express.Request,
+    payload?: {
+      authorization?: string,
+    },
+  }) => {// yey undefined framework properties mmmm... like it (no)
     if (!req) {
-      return connection ? connection.context : {}
+      return payload ? getContext(payload.authorization || '') : {}
     } else {
       return getContext(req.headers.authorization || '')
     }
-  },
-  subscriptions: {
-    onConnect(
-      { authorization } : { authorization?: string }
-    ) {
-      return getContext(authorization || '')
-    },
-    onDisconnect: () => {
-
-    },
   },
 })
 server.applyMiddleware({ app })
