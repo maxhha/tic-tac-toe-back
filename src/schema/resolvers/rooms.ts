@@ -1,16 +1,20 @@
 import { withFilter, PubSub } from "apollo-server"
 import {
+  getRoom,
   createRoom,
   findRoom,
   enterRoom,
+  startGameInRoom,
 } from "../../rooms"
+
 import {
   getUser,
+  setUserReady,
 } from "../../users"
 
 const pubsub = new PubSub()
 
-const ADD_USER = "add_user"
+const USER_READY = "user_ready"
 
 export default {
   Room: {
@@ -44,27 +48,56 @@ export default {
       if (!userId) return null
       return getUser(userId)
         .then((user) => enterRoom(id, user))
-        .then((room) => {
-          pubsub.publish(ADD_USER, { waitForOtherUserEnter: room } )
-          return room
+    },
+
+    async setReady(
+      _: any,
+      { ready }: { ready: boolean },
+      { userId, currentRoomId }: ResolverContext,
+    ) {
+      if (!userId) return null
+      if (!currentRoomId) return null
+
+      await setUserReady(userId, ready)
+      const room = await getRoom(currentRoomId)
+      try {
+        const roomWithGame = await startGameInRoom(room.id)
+
+        pubsub.publish(USER_READY, {
+          waitForOtherUser: roomWithGame,
         })
+        return roomWithGame
+
+      } catch (error) {
+        if (
+          !(error instanceof Error)
+          || (
+            error.message !== "Not enough users"
+            && error.message !== "Not all users ready"
+          )
+        ) {
+          throw error
+        }
+      }
+
+      return room
     },
   },
   Subscription: {
-    waitForOtherUserEnter: {
+    waitForOtherUser: {
       subscribe: withFilter(
         (_parent: any, _variables: any, { currentRoomId }: ResolverContext) => {
           if (!currentRoomId) {
             throw new Error("Not in room")
           }
-          return pubsub.asyncIterator(ADD_USER)
+          return pubsub.asyncIterator(USER_READY)
         },
         (
-          payload: { waitForOtherUserEnter: Room },
+          payload: { waitForOtherUser: Room },
           _variables: any,
           { currentRoomId }: ResolverContext,
         ) => {
-          return payload.waitForOtherUserEnter.id === currentRoomId
+          return payload.waitForOtherUser.id === currentRoomId
         }
       )
     },

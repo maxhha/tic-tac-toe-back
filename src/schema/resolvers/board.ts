@@ -3,6 +3,7 @@ import { getUser } from "../../users"
 import {
   getRoom,
   updateRoom,
+  finishGameInRoom,
 } from "../../rooms"
 import {
   makeStep,
@@ -77,13 +78,21 @@ export default {
       }
       room.board = makeStep(room.board, cell)
 
-      return updateRoom(room).then((room) => {
-        pubsub.publish(UPDATE_BOARD, {
-          waitBoardChange: room.board,
-          roomId: room.id,
+      return updateRoom(room)
+        .then((room) => {
+          if (room.board && room.board.winner && room.gameActive) {
+            return finishGameInRoom(room.id)
+          } else {
+            return room
+          }
         })
-        return room.board
-      })
+        .then((room) => {
+          pubsub.publish(UPDATE_BOARD, {
+            waitBoardChange: room.board,
+            roomId: room.id,
+          })
+          return room.board
+        })
     },
   },
   Subscription: {

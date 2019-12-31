@@ -1,6 +1,8 @@
 import { generateID } from "../utils"
 import {
+  getUser,
   setUserRoom,
+  setUserReady,
 } from "../users"
 import {
   createBoard,
@@ -48,6 +50,39 @@ export const updateRoom = (room: Room) => Promise.resolve().then(
   }
 )
 
+export const startGameInRoom = (id: string) => Promise.resolve(id)
+  .then(getRoom)
+  .then(async room => {
+    const users = await Promise.all(room.users.map(getUser))
+    if (users.length !== 2) {
+      throw new Error("Not enough users")
+    }
+    if (!(users[0].ready && users[1].ready)) {
+      throw new Error("Not all users ready")
+    }
+
+    room.gameActive = true
+    room.board = createBoard(room)
+    return updateRoom(room)
+  })
+
+export const finishGameInRoom = (id: string) => Promise.resolve(id)
+  .then(getRoom)
+  .then(async room => {
+    if (!room.gameActive)
+      throw new Error("Game is not active")
+    if (!room.board)
+      throw new Error("No board in room")
+    if (!room.board.winner)
+      throw new Error("No winner")
+
+    room.gameActive = false
+    await Promise.all(
+      room.users.map((id => setUserReady(id, false)))
+    )
+    return updateRoom(room)
+  })
+
 export const enterRoom = (id: string, user: User) => Promise.resolve(id)
   .then(getRoom)
   .then(async (room) => {
@@ -60,23 +95,14 @@ export const enterRoom = (id: string, user: User) => Promise.resolve(id)
     room.users = [...room.users, user.id]
     await setUserRoom(user.id, id)
 
-    if (room.users.length === 2)
-      room = startGameInRoom(room)
-
     return updateRoom(room)
   })
 
 export const exitRoom = (id: string, user: User) => Promise.resolve(id)
   .then(getRoom)
   .then(async room => {
-      room.users = room.users.filter(u => !Object.is(u, user))
-      await setUserRoom(user.id, id)
+      room.users = room.users.filter(id => id !== user.id)
+      await setUserRoom(user.id)
       return updateRoom(room)
   }
 )
-
-const startGameInRoom = (room: Room) => {
-  room.gameActive = true
-  room.board = createBoard(room)
-  return room
-}

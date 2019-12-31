@@ -18,11 +18,12 @@ type Mutation {
   Add user to room
   """
   enterRoom(id: ID!):Room
+  setReady(ready: Boolean!):Room
 }
 
 type Subscription {
   """
   Activates when user entered to room
   """
-  waitForOtherUserEnter:Room
+  waitForOtherUser:Room
 }

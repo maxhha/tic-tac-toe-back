@@ -22,6 +22,7 @@ export const createUser = (name: string) => Promise.resolve().then(
     const user : User = {
       id,
       name,
+      ready: false,
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -41,7 +42,17 @@ export const setUserRoom = (id: string, roomId?: string) => Promise.resolve(id)
   .then(getUser)
   .then(
     (user) => {
+      if (user.ready) {
+        throw new Error("User is ready in other room")
+      }
       user.currentRoomId = roomId
       return updateUser(id, user)
     }
   )
+
+export const setUserReady = (id: string, ready: boolean) => Promise.resolve(id)
+  .then(getUser)
+  .then(user => {
+    user.ready = ready
+    return updateUser(id, user)
+  })

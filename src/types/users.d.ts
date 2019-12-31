@@ -4,6 +4,7 @@ interface User {
   currentRoomId?: string
   createdAt: Date
   updatedAt: Date
+  ready: boolean
 }
 
 interface UserDatabase {
