@@ -4,6 +4,7 @@ import {
   createRoom,
   findRoom,
   enterRoom,
+  exitRoom,
   startGameInRoom,
 } from "../../rooms"
 
@@ -81,6 +82,19 @@ export default {
       }
 
       return room
+    },
+    async exitRoom(
+      _parent: any,
+      _variables: any,
+      { userId, currentRoomId }: ResolverContext,
+    ) {
+      if (!userId) return null
+      if (!currentRoomId) return null
+
+      const user = await getUser(userId)
+      await exitRoom(currentRoomId, user)
+
+      return true
     },
   },
   Subscription: {

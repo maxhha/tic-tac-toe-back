@@ -103,6 +103,10 @@ export const exitRoom = (id: string, user: User) => Promise.resolve(id)
   .then(async room => {
       room.users = room.users.filter(id => id !== user.id)
       await setUserRoom(user.id)
+      if (room.board) {
+        room.board = undefined
+        room.gameActive = false
+      }
       return updateRoom(room)
   }
 )

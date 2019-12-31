@@ -18,6 +18,13 @@ type Mutation {
   Add user to room
   """
   enterRoom(id: ID!):Room
+  """
+  Remove current user from room. True if successful
+  """
+  exitRoom:Boolean
+  """
+  Notify if player is ready to start game
+  """
   setReady(ready: Boolean!):Room
 }
 
