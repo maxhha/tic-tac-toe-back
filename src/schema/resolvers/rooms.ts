@@ -32,12 +32,12 @@ export default {
     ),
   },
   Mutation: {
-    createRoom(
+    async createRoom(
       _ : any,
       { name }: { name: string },
       { userId } : ResolverContext,
     ) {
-      if (!userId) return null
+      if (!userId) throw "No user"
       return getUser(userId)
         .then((user) => createRoom(name, user))
     },
@@ -47,7 +47,7 @@ export default {
       { id }: { id: string },
       { userId }: ResolverContext,
     ) {
-      if (!userId) return null
+      if (!userId) throw "No user"
       return getUser(userId)
         .then((user) => enterRoom(id, user))
     },
@@ -57,7 +57,7 @@ export default {
       { ready }: { ready: boolean },
       { userId, currentRoomId }: ResolverContext,
     ) {
-      if (!userId) return null
+      if (!userId) throw "No user"
       if (!currentRoomId) return null
 
       await setUserReady(userId, ready)
@@ -89,7 +89,7 @@ export default {
       _variables: any,
       { userId, currentRoomId }: ResolverContext,
     ) {
-      if (!userId) return null
+      if (!userId) throw "No user"
       if (!currentRoomId) return null
 
       const user = await getUser(userId)

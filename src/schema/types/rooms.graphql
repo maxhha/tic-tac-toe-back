@@ -13,11 +13,11 @@ type Mutation {
   """
   Create room with name and one user
   """
-  createRoom(name: String!):Room
+  createRoom(name: String!): Room!
   """
   Add user to room
   """
-  enterRoom(id: ID!):Room
+  enterRoom(id: ID!): Room!
   """
   Remove current user from room. True if successful
   """
