@@ -16,6 +16,7 @@ import {
 const pubsub = new PubSub()
 
 const USER_READY = "user_ready"
+const USER_EXIT = "user_exit"
 
 export default {
   Room: {
@@ -94,6 +95,11 @@ export default {
       const user = await getUser(userId)
       await exitRoom(currentRoomId, user)
 
+      pubsub.publish(USER_EXIT, {
+        userExit: await getUser(userId),
+        roomId: currentRoomId,
+      })
+
       return true
     },
   },
@@ -112,6 +118,23 @@ export default {
           { currentRoomId }: ResolverContext,
         ) => {
           return payload.waitForOtherUser.id === currentRoomId
+        }
+      )
+    },
+    userExit: {
+      subscribe: withFilter(
+        (_parent: any, _variables: any, { currentRoomId }: ResolverContext) => {
+          if (!currentRoomId) {
+            throw new Error("Not in room")
+          }
+          return pubsub.asyncIterator(USER_EXIT)
+        },
+        (
+          payload: { userExit: User, roomId: string },
+          _variables: any,
+          { currentRoomId }: ResolverContext,
+        ) => {
+          return payload.roomId === currentRoomId
         }
       )
     },

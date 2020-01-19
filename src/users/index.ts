@@ -42,10 +42,11 @@ export const setUserRoom = (id: string, roomId?: string) => Promise.resolve(id)
   .then(getUser)
   .then(
     (user) => {
-      if (user.ready) {
+      if (user.ready && roomId !== undefined) {
         throw new Error("User is ready in other room")
       }
       user.currentRoomId = roomId
+      user.ready = false
       return updateUser(id, user)
     }
   )

@@ -30,7 +30,11 @@ type Mutation {
 
 type Subscription {
   """
-  Activates when user entered to room
+  Activates when all users ready in room
   """
   waitForOtherUser:Room
+  """
+  Activates when someone exits room
+  """
+  userExit:User
 }
