@@ -29,6 +29,8 @@ const getContext = async (token: string) => {
 
 const app: express.Application = express()
 
+app.use(express.static('front'))
+
 // Setup GraphQL server
 const server = new ApolloServer({
   schema,
