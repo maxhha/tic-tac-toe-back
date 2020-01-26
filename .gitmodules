@@ -1,4 +1,4 @@
 [submodule "github-tic-tac-toe-front"]
 	path = front
 	url = https://github.com/maxhha/tic-tac-toe-front.git
-	branch = build
+	branch = master
