@@ -1,2 +1,1 @@
-release: ./scripts/release.sh
-web: yarn prod
+web: yarn genkey && yarn prod
